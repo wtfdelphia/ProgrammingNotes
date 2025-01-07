@@ -1,0 +1,9 @@
+[book]
+authors = ["wagntf"]
+language = "zh-CN"
+multilingual = false
+src = "src"
+title = "各种工具的笔记文档"
+
+[output.html]
+additional-js = ["mermaid.min.js", "pdf.min.js"]
