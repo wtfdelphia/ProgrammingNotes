@@ -1,0 +1,359 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Windows中安装Nginx - 各种工具的笔记文档</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">各种工具的笔记文档</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="一nginx简介"><a class="header" href="#一nginx简介">一、Nginx简介</a></h2>
+<p>Nginx (engine x) 是一个高性能的HTTP和反向代理服务器，也是一个IMAP/POP3/SMTP服务器。Nginx是由伊戈尔·赛索耶夫为俄罗斯访问量第二的Rambler.ru 站点（俄文：Рамблер）开发的.</p>
+<p>它也是一种轻量级的Web服务器，可以作为独立的服务器部署网站（类似Tomcat）。它高性能和低消耗内存的结构受到很多大公司青睐，如淘宝网站架设。</p>
+<p>先下载直接去官网 <a href="https://www.cnblogs.com/taiyonghai/p/nginx.org">nginx.org</a></p>
+<p><img src="jpg/bcec8a79b24948f79628f255cd20d5a7.png" alt="image.png" /></p>
+<p>分别有Linux和Windows两个版本</p>
+<p><img src="jpg/7c2235633df84e4ebe7895c54e77d1c8.png" alt="image.png" /></p>
+<p>点击后就会下载，下载完成后开始安装，其实官网已经告诉了如何安装，右侧“documentation -&gt; nginx windows”就有详细的说明，只是英文而已</p>
+<h2 id="二安装部署"><a class="header" href="#二安装部署">二、安装部署</a></h2>
+<h4 id="1下载完成后解压缩运行cmd使用命令进行操作不要直接双击nginxexe不要直接双击nginxexe不要直接双击nginxexe"><a class="header" href="#1下载完成后解压缩运行cmd使用命令进行操作不要直接双击nginxexe不要直接双击nginxexe不要直接双击nginxexe">1、下载完成后，解压缩，运行cmd，使用命令进行操作，不要直接双击nginx.exe，不要直接双击nginx.exe，不要直接双击nginx.exe</a></h4>
+<p>一定要在dos窗口启动，不要直接双击nginx.exe，这样会导致修改配置后重启、停止nginx无效，需要手动关闭任务管理器内的所有nginx进程，再启动才可以</p>
+<h4 id="2使用命令到达nginx的加压缩后的目录"><a class="header" href="#2使用命令到达nginx的加压缩后的目录">2、使用命令到达nginx的加压缩后的目录</a></h4>
+<pre><code class="language-powershell">cd c:\nginx-1.15.2
+</code></pre>
+<h4 id="3启动nginx服务启动时会一闪而过是正常的"><a class="header" href="#3启动nginx服务启动时会一闪而过是正常的">3、启动nginx服务，启动时会一闪而过是正常的</a></h4>
+<pre><code class="language-powershell">start nginx
+</code></pre>
+<h4 id="4查看任务进程是否存在dos或打开任务管理器都行"><a class="header" href="#4查看任务进程是否存在dos或打开任务管理器都行">4、查看任务进程是否存在，dos或打开任务管理器都行</a></h4>
+<pre><code class="language-powershell">tasklist /fi "imagename eq nginx.exe"
+</code></pre>
+<p><img src="jpg/fb370dbba61d4d57baa173a67c7c9a50.png" alt="image.png" /></p>
+<p>打开任务管理器在进程中看不到nginx.exe的进程（双击nginx.exe时会显示在这里），需要打开详细信息里面能看到隐藏的nginx.exe进程</p>
+<p><img src="jpg/99dcbc9d2a6d4c8980dc7bc0f21731f3.png" alt="image.png" /></p>
+<p>如果都没有可能是启动报错了查看一下日志，在nginx目录中的logs文件夹下error.log是日志文件</p>
+<p><img src="jpg/5fe457fc4fc44dbcb5384ce451af893a.png" alt="image.png" /></p>
+<p>常见的错误：</p>
+<p>(1)端口号被占用</p>
+<p>(2)nginx文件夹路径含中文</p>
+<p>其他错误就详细看log中的描述</p>
+<h4 id="5修改配置文件进入解压缩目录直接文件夹点击进去即可不需要从dos操作"><a class="header" href="#5修改配置文件进入解压缩目录直接文件夹点击进去即可不需要从dos操作">5、修改配置文件，进入解压缩目录，直接文件夹点击进去即可，不需要从dos操作</a></h4>
+<p><img src="jpg/4208c930f837416190bc8b4d85ab8141.png" alt="image.png" /></p>
+<p>在conf目录下找到nginx.conf使用txt文本打开即可，找到server这个节点，修改端口号，如果有需求可以修改主页目录没有就不用修改</p>
+<p><img src="jpg/62dff5401e03447fb8f21c558f0e6897.png" alt="image.png" /></p>
+<p>修改完成后保存，使用以下命令检查一下配置文件是否正确，后面是nginx.conf文件的路径，successful就说明正确了</p>
+<pre><code class="language-powershell">nginx -t -c /nginx-1.15.2/conf/nginx.conf
+</code></pre>
+<p><img src="jpg/544ba895d0e741d0808d5eb5ab13f6f0.png" alt="image.png" /></p>
+<p>如果程序没启动就直接start nginx启动，如果已经启动了就使用以下命令重新加载配置文件并重启</p>
+<pre><code class="language-powershell">nginx -s reload
+</code></pre>
+<p>之后就打开浏览器访问刚才的域名及端口http://localhost:8800，出现欢迎页就说明部署成功了</p>
+<p><img src="jpg/f5eae6421a154bf8aa07efbc4700dffe.png" alt="image.png" /></p>
+<h4 id="6关闭nginx服务使用以下命令同样也是一闪而过是正常的看一下是否进程已消失即可"><a class="header" href="#6关闭nginx服务使用以下命令同样也是一闪而过是正常的看一下是否进程已消失即可">6、关闭nginx服务使用以下命令，同样也是一闪而过是正常的，看一下是否进程已消失即可</a></h4>
+<p>快速停止</p>
+<pre><code class="language-powershell">nginx -s stop
+</code></pre>
+<p>完整有序的关闭</p>
+<pre><code class="language-powershell">nginx -s quit
+</code></pre>
+<h2 id="三优化配置"><a class="header" href="#三优化配置">三、优化配置</a></h2>
+<p>打开nginx.conf按照自己需求进行配置，下面列出简单的一些常规调优配置</p>
+<pre><code class="language-nginx">#user  nobody;
+#==工作进程数，一般设置为cpu核心数
+worker_processes  1;
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+#pid     logs/nginx.pid;
+events {
+   #==最大连接数，一般设置为cpu*2048
+   worker_connections  1024;
+}
+http {
+   include    mime.types;
+   default_type  application/octet-stream;
+   #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+   #          '$status $body_bytes_sent "$http_referer" '
+   #          '"$http_user_agent" "$http_x_forwarded_for"';
+   #access_log  logs/access.log  main;
+   sendfile     on;
+   #tcp_nopush   on;
+   #keepalive_timeout  0;
+   #==客户端链接超时时间
+   keepalive_timeout  65;
+   #gzip  on;
+   #当配置多个server节点时，默认server names的缓存区大小就不够了，需要手动设置大一点
+   server_names_hash_bucket_size 512;
+   #server表示虚拟主机可以理解为一个站点，可以配置多个server节点搭建多个站点
+   #每一个请求进来确定使用哪个server由server_name确定
+   server {
+     #站点监听端口
+     listen    8800;
+     #站点访问域名
+     server_name  localhost;
+     #编码格式，避免url参数乱码
+     charset utf-8;
+     #access_log  logs/host.access.log  main;
+     #location用来匹配同一域名下多个URI的访问规则
+     #比如动态资源如何跳转，静态资源如何跳转等
+     #location后面跟着的/代表匹配规则
+     location / {
+       #站点根目录，可以是相对路径，也可以使绝对路径
+       root  html;
+       #默认主页
+       index  index.html index.htm;
+       #转发后端站点地址，一般用于做软负载，轮询后端服务器
+       #proxy_pass http://10.11.12.237:8080;
+       #拒绝请求，返回403，一般用于某些目录禁止访问
+       #deny all;
+       #允许请求
+       #allow all;
+       add_header 'Access-Control-Allow-Origin' '*';
+       add_header 'Access-Control-Allow-Credentials' 'true';
+       add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+       add_header 'Access-Control-Allow-Headers' 'DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+       #重新定义或者添加发往后端服务器的请求头
+       #给请求头中添加客户请求主机名
+       proxy_set_header Host $host;
+       #给请求头中添加客户端IP
+       proxy_set_header X-Real-IP $remote_addr;
+       #将$remote_addr变量值添加在客户端“X-Forwarded-For”请求头的后面，并以逗号分隔。 如果客户端请求未携带“X-Forwarded-For”请求头，$proxy_add_x_forwarded_for变量值将与$remote_addr变量相同  
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       #给请求头中添加客户端的Cookie
+       proxy_set_header Cookie $http_cookie;
+       #将使用代理服务器的主域名和端口号来替换。如果端口是80，可以不加。
+       proxy_redirect off;
+       #浏览器对 Cookie 有很多限制，如果 Cookie 的 Domain 部分与当前页面的 Domain 不匹配就无法写入。
+       #所以如果请求 A 域名，服务器 proxy_pass 到 B 域名，然后 B 服务器输出 Domian=B 的 Cookie，
+       #前端的页面依然停留在 A 域名上，于是浏览器就无法将 Cookie 写入。
+       #不仅是域名，浏览器对 Path 也有限制。我们经常会 proxy_pass 到目标服务器的某个 Path 下，
+       #不把这个 Path 暴露给浏览器。这时候如果目标服务器的 Cookie 写死了 Path 也会出现 Cookie 无法写入的问题。
+       #设置“Set-Cookie”响应头中的domain属性的替换文本，其值可以为一个字符串、正则表达式的模式或一个引用的变量
+       #转发后端服务器如果需要Cookie则需要将cookie domain也进行转换，否则前端域名与后端域名不一致cookie就会无法存取
+      #配置规则：proxy_cookie_domain serverDomain(后端服务器域) nginxDomain(nginx服务器域)
+       proxy_cookie_domain localhost .testcaigou800.com;
+       #取消当前配置级别的所有proxy_cookie_domain指令
+       #proxy_cookie_domain off;
+       #与后端服务器建立连接的超时时间。一般不可能大于75秒；
+       proxy_connect_timeout 30;
+     }
+     #error_page  404        /404.html;
+     # redirect server error pages to the static page /50x.html
+     error_page  500 502 503 504  /50x.html;
+     location = /50x.html {
+       root  html;
+     }
+  }
+  #当需要对同一端口监听多个域名时，使用如下配置，端口相同域名不同，server_name也可以使用正则进行配置
+  #但要注意server过多需要手动扩大server_names_hash_bucket_size缓存区大小
+  server {
+  　listen 80;
+  　server_name www.abc.com;
+  　charset utf-8;
+  　location / {
+  　proxy_pass http://localhost:10001;
+  　}
+　}
+　server {
+  　listen 80;
+  　server_name aaa.abc.com;
+  　charset utf-8;
+  　location / {
+  　proxy_pass http://localhost:20002;
+  　}
+　}
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="chapter_4.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="chapter_4.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="pdf.min.js"></script>
+
+
+    </div>
+    </body>
+</html>
